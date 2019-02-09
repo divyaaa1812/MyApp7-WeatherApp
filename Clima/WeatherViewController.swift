@@ -12,9 +12,7 @@ import Alamofire
 import SwiftyJSON
 
 class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanReceive {
-    func dataReceived(city: String) {
-        print(city)
-    }
+    
     
     //Constants
     let WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"
@@ -22,7 +20,7 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
     
 
     //TODO: Declare instance variables here
-    let locationManager = CLLocationManager() // creating an object for CLLocationManager class
+    let locationManager = CLLocationManager() // creating an object for CLLocationManager class which is inbuilt class
     var weatherdata = WeatherDataModel() //this variable to accesss data from weatherdatamodel.swift
 
     
@@ -81,6 +79,9 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
         }
         else {
             cityLabel.text = "weather unavailable"
+            temperatureLabel.text = "-"
+            weatherIcon.image = UIImage(named:"dunno")
+        
         }
     }
     
@@ -91,7 +92,7 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
     //Write the updateUIWithWeatherData method here:
     func updateUIWithWeatherData() {
         cityLabel.text = weatherdata.city
-        temperatureLabel.text = "\(weatherdata.temperature)"
+        temperatureLabel.text = "\(weatherdata.temperature)°"
         weatherIcon.image = UIImage(named: weatherdata.weatherIconName)
     }
     
@@ -124,8 +125,12 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
     /***************************************************************/
     
     
-    //Write the userEnteredANewCityName Delegate method here:
-    
+    //Write the dataReceived Delegate method here:
+        func dataReceived(city: String) {
+//            print(city) --> no need to print to console instaed display weather info on app UI. below is code for it
+            let params : [String : String] = ["q" : city , "appid" : APP_ID]
+            getWeatherdata(url: WEATHER_URL, parameters: params)
+            }
 
     
     //Write the PrepareForSegue Method here
