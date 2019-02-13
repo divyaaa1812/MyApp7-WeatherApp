@@ -17,6 +17,8 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
     //Constants
     let WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"
     let APP_ID = "efc7d97b1dedc4180f0f881eca8398ae"
+    let AIR_URL = "https://openweathermap.org/api/pollution/co"
+    
     
 
     //TODO: Declare instance variables here
@@ -29,6 +31,9 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var temperatureLabel: UILabel!
 
+    @IBOutlet weak var mySwitch: UISwitch!
+    
+    @IBOutlet weak var airQuality: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -53,6 +58,7 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
                 print("got weather data") //printing to console when success and it will send data
                 // formatting data received to use it on our app
                 let weatherJSON : JSON = JSON(response.result.value!) // data received is optional we can force unwrap this since we are checking isSuccess
+//                print(weatherJSON)
                 self.updateWeatherdata(json: weatherJSON)
                 
             }
@@ -62,20 +68,39 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
             }
         }
     }
-
+    
+    func  getAirQuality(url: String, parameters:[String:Any]){
+            Alamofire.request(url, method: .get, parameters: parameters).responseJSON{
+            response in //closures in swift
+            if response.result.isSuccess {
+                print("got air data")
+        let airJSON : JSON = JSON(response.result.value!)
+        print(airJSON)
+    }
+            else {
+                print("Error \(String(describing: response.result.error))")
+                self.cityLabel.text = "connection issues"
+            }
+        }
+    }
+        
+        func updateAirdata(json: JSON){
+            
+        }
     //MARK: - JSON Parsing
     /***************************************************************/
-   
+            
     
     //Write the updateWeatherData method here:
     func updateWeatherdata(json: JSON) {
         if let tempResult = json["main"]["temp"].double
         {
-        weatherdata.temperature = Int(tempResult - 273.15) // if we give wrong app id, data will not fetch in this case, here instead of force unwrap tempResult make it to optional binding so remove "!" for tempResult and use if condition
+            print(tempResult)
+        weatherdata.celsius = Int(tempResult - 273.15) // if we give wrong app id, data will not fetch in this case, here instead of force unwrap tempResult make it to optional binding so remove "!" for tempResult and use if condition
         weatherdata.city = json["name"].stringValue
         weatherdata.condition = json["weather"][0]["id"].intValue
         weatherdata.weatherIconName = weatherdata.updateWeatherIcon(condition: weatherdata.condition)
-        updateUIWithWeatherData()
+            updateUIWithWeatherData()
         }
         else {
             cityLabel.text = "weather unavailable"
@@ -84,6 +109,7 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
         
         }
     }
+        
     
     //MARK: - UI Updates
     /***************************************************************/
@@ -92,8 +118,24 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
     //Write the updateUIWithWeatherData method here:
     func updateUIWithWeatherData() {
         cityLabel.text = weatherdata.city
-        temperatureLabel.text = "\(weatherdata.temperature)°"
+        temperatureLabel.text = "\(weatherdata.celsius)℃"
         weatherIcon.image = UIImage(named: weatherdata.weatherIconName)
+    }
+    
+    @IBAction func stateChanged(_ sender: UISwitch) {
+        if sender.isOn {
+            print("UISwitch state is now ON")
+            updateUIWithWeatherData()
+        }
+        else if (cityLabel.text == "connection issues") || (cityLabel.text == "Location Unavailable") || (cityLabel.text == "weather unavailable") {
+            temperatureLabel.text = "-"
+        }
+        else {
+            print("UISwitch state is now Off")
+            weatherdata.Farh = 9/5*(weatherdata.celsius)+32
+            temperatureLabel.text = "\(weatherdata.Farh)℉"
+
+        }
     }
     
     //MARK: - Location Manager Delegate Methods
@@ -110,8 +152,11 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
             // now turn these lat and long data in to parameters to send data to weather app website
             let latitude = String(location.coordinate.latitude)
             let longitude = String(location.coordinate.longitude)
+            let currentDateTime = Date()
             let params : [String : String] = ["lat": latitude , "lon": longitude , "appid" :APP_ID] // use dictionary. these 3 param values are from api call to weather app  website
+            let params1 : [String : Any] = ["location":[latitude,longitude], "datetime" :currentDateTime , "appid" :APP_ID]
             getWeatherdata(url: WEATHER_URL, parameters: params)
+            getAirQuality(url: AIR_URL, parameters:params1)
         }
     }
     //Write the didFailWithError method here:
@@ -119,6 +164,7 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
         print(error)
         //if location is not found due to no internet etc then display location not available
         cityLabel.text = "Location Unavailable"
+       
     }
     
     //MARK: - Change City Delegate methods
@@ -138,9 +184,9 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
         if segue.identifier == "changeCityName" {
             let secondVC = segue.destination as! ChangeCityViewController
             secondVC.delegate = self
-            
         }
     }
     
 
 }
+
