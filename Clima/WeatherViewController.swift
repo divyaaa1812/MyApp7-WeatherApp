@@ -17,7 +17,7 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
     //Constants
     let WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"
     let APP_ID = "efc7d97b1dedc4180f0f881eca8398ae"
-    let AIR_URL = "https://openweathermap.org/api/pollution/co"
+//    let AIR_URL = "https://openweathermap.org/api/pollution/co"
     
     
 
@@ -33,7 +33,7 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
 
     @IBOutlet weak var mySwitch: UISwitch!
     
-    @IBOutlet weak var airQuality: UILabel!
+//    @IBOutlet weak var airQuality: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -69,24 +69,24 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
         }
     }
     
-    func  getAirQuality(url: String, parameters:[String:Any]){
-            Alamofire.request(url, method: .get, parameters: parameters).responseJSON{
-            response in //closures in swift
-            if response.result.isSuccess {
-                print("got air data")
-        let airJSON : JSON = JSON(response.result.value!)
-        print(airJSON)
-    }
-            else {
-                print("Error \(String(describing: response.result.error))")
-                self.cityLabel.text = "connection issues"
-            }
-        }
-    }
-        
-        func updateAirdata(json: JSON){
-            
-        }
+//    func  getAirQuality(url: String, parameters:[String:Any]){
+//            Alamofire.request(url, method: .get, parameters: parameters).responseJSON {
+//            response in //closures in swift
+//            if response.result.isSuccess {
+//                print("got air data")
+//        let airJSON : JSON = JSON(response.result.value!)
+//        print(airJSON)
+//    }
+//            else {
+//                print("Error \(String(describing: response.result.error))")
+//                self.cityLabel.text = "connection issues"
+//            }
+//        }
+//    }
+    
+//        func updateAirdata(json: JSON){
+//
+//        }
     //MARK: - JSON Parsing
     /***************************************************************/
             
@@ -152,11 +152,11 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
             // now turn these lat and long data in to parameters to send data to weather app website
             let latitude = String(location.coordinate.latitude)
             let longitude = String(location.coordinate.longitude)
-            let currentDateTime = Date()
+//            let currentDateTime = Date()
             let params : [String : String] = ["lat": latitude , "lon": longitude , "appid" :APP_ID] // use dictionary. these 3 param values are from api call to weather app  website
-            let params1 : [String : Any] = ["location":[latitude,longitude], "datetime" :currentDateTime , "appid" :APP_ID]
+//            let params1 : [String : Any] = ["datetime" :currentDateTime, "location":["lat":latitude, "lon":longitude],"appid" :APP_ID]
             getWeatherdata(url: WEATHER_URL, parameters: params)
-            getAirQuality(url: AIR_URL, parameters:params1)
+//            getAirQuality(url: AIR_URL, parameters:params1)
         }
     }
     //Write the didFailWithError method here:
