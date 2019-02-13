@@ -17,7 +17,7 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
     //Constants
     let WEATHER_URL = "http://api.openweathermap.org/data/2.5/weather"
     let APP_ID = "efc7d97b1dedc4180f0f881eca8398ae"
-//    let AIR_URL = "https://openweathermap.org/api/pollution/co"
+    let AIR_URL = "api.openweathermap.org/data/2.5/forecast"
     
     
 
@@ -30,7 +30,6 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
     @IBOutlet weak var weatherIcon: UIImageView!
     @IBOutlet weak var cityLabel: UILabel!
     @IBOutlet weak var temperatureLabel: UILabel!
-
     @IBOutlet weak var mySwitch: UISwitch!
     
 //    @IBOutlet weak var airQuality: UILabel!
@@ -69,8 +68,8 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
         }
     }
     
-//    func  getAirQuality(url: String, parameters:[String:Any]){
-//            Alamofire.request(url, method: .get, parameters: parameters).responseJSON {
+//    func  getAirQuality(url: String, parameters:[String:String]){
+//        Alamofire.request(url, method: .get, parameters: parameters).responseString {
 //            response in //closures in swift
 //            if response.result.isSuccess {
 //                print("got air data")
@@ -154,9 +153,9 @@ class WeatherViewController: UIViewController,CLLocationManagerDelegate,CanRecei
             let longitude = String(location.coordinate.longitude)
 //            let currentDateTime = Date()
             let params : [String : String] = ["lat": latitude , "lon": longitude , "appid" :APP_ID] // use dictionary. these 3 param values are from api call to weather app  website
-//            let params1 : [String : Any] = ["datetime" :currentDateTime, "location":["lat":latitude, "lon":longitude],"appid" :APP_ID]
+//            let params2 : [String : String] = ["q" : city]
             getWeatherdata(url: WEATHER_URL, parameters: params)
-//            getAirQuality(url: AIR_URL, parameters:params1)
+//            getAirQuality(url: AIR_URL, parameters:params2)
         }
     }
     //Write the didFailWithError method here:
